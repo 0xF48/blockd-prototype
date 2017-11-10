@@ -1,0 +1,38 @@
+{
+  "name": "blockd",
+  "version": "1.0.0",
+  "description": "platform: unity game engine / mobile",
+  "main": "webpack.config.js",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "color": "^2.0.0",
+    "express": "^4.16.2",
+    "express-session": "^1.15.6",
+    "express-socket.io-session": "^1.3.2",
+    "lodash": "^4.17.4",
+    "pug": "^2.0.0-rc.4",
+    "random-color": "^1.0.1",
+    "socket.io": "^2.0.4",
+    "uuid": "^3.1.0",
+    "webpack": "^3.8.1"
+  },
+  "devDependencies": {
+    "classnames": "^2.2.5",
+    "coffee-loader": "^0.9.0",
+    "coffeescript": "^2.0.2",
+    "colors": "^1.1.2",
+    "css-loader": "^0.28.7",
+    "json-loader": "^0.5.7",
+    "node-sass": "^4.6.0",
+    "preact": "^8.2.6",
+    "raw-loader": "^0.5.1",
+    "sass-loader": "^6.0.6",
+    "style-loader": "^0.19.0",
+    "zepto": "^1.2.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

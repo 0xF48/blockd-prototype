@@ -1,0 +1,319 @@
+$root-bg: #1d2c2f;
+$sub-bg: #2C4943;
+$dim: 50px;
+$shapedim: 30px;
+$shade: 200deg;
+$b0: hsl($shade, 0%, 10%);
+$b1: hsl($shade, 0%, 15%);
+$b1a: #243035;
+$b2: hsl($shade, 0%, 30%);
+$b3: hsl($shade, 0%, 50%);
+$pink: #C08F84;
+$undone: #2e4954;
+$gain: #1294bf;
+$gain0: #02232B;
+$loss: #FF5027;
+$error: #de3232;
+$dark-opaque: rgba(0,0,0,0.06);
+
+*{
+	box-sizing: border-box;
+}
+div{
+	font-size: 20px;
+	font-family: Roboto;
+}
+html,body{
+	margin: 0;
+	padding: 0;
+	font-size: 16px;
+	color: $b3;
+}
+
+@mixin center {
+	align-items : center;
+	display   : flex;
+	align-content : center;
+	justify-content: center;  
+}
+
+@mixin vert{
+	flex-direction: column;
+}
+
+.full-w{
+	width: 100%;
+}
+
+.hidden{
+	display: none;
+}
+
+.center{
+	@include center;
+}
+
+.wrapper{
+	background: $b1;
+	overflow: hidden;
+	height: 100vh;
+	width: 100vw;
+}
+
+
+.player{
+	margin-bottom: 10px;
+}
+.tag{
+	margin-left: 30px;
+}
+.name{
+	margin-left: 30px;
+}
+.input-team-id{
+	width: $dim;
+}
+input{
+	font-size: 20px;
+	background: $b0;
+	color: $b3;
+	border: none;
+	height: $dim;
+	margin: 5px;
+	padding: 10px;
+}
+.lobby{
+	flex-direction: column;
+}
+.title{
+	margin-top: 10%;
+	color: white;
+	font-family: Merienda;
+}
+
+.btn{
+	cursor: pointer;
+	margin: 5px;
+	height: $dim;
+	background: $b2;
+	color: white;
+	
+	display: inline-block;
+	padding: 10px;
+	font-family: Roboto;
+	line-height: $dim/1.7;
+}
+
+.join-btn{
+	float: right;
+}
+
+
+.disabled{
+	opacity: 0.3;
+	cursor: default;
+}
+
+
+
+.card{
+	background: $b0;
+	.shape{
+		background: $b3;
+	}
+	&.selected{
+		background: $b1;
+		.shape{
+			background: white;
+		}
+	}
+}
+
+
+.ui{
+	flex-direction: column;
+}
+
+canvas{
+	height: 100vh;
+	width: 100vw;
+	background: $b0;
+}
+
+
+.end-stats{
+	span{
+		margin-right: 20px;
+		opacity: 0.5;
+	}
+}
+
+
+.game-stats{
+	position: absolute;
+	right: 0;
+	top: 0;
+	align-items: flex-end;
+	flex-direction: column;
+	display: flex;
+	height: 40px;
+	width: 300px;
+	color: white;
+	padding: 10px;
+
+	div{
+		font-weight: 200;
+		font-family: monospace;
+		font-size: 14px;
+		float: left;
+		span{
+			color: white;
+			opacity: 0.5;
+			margin-right: 10px;
+		}
+	}
+}
+
+
+
+// css shapes
+.type-1 {
+	width: 0;
+	height: 0;
+	border-left: $shapedim/2 solid transparent;
+	border-right: $shapedim/2 solid transparent;
+	border-bottom: $shapedim solid $b3;
+	background: none !important;
+}
+.type-0 {
+	width: $shapedim;
+	height: $shapedim;
+	-moz-border-radius: $shapedim/2;
+	-webkit-border-radius: $shapedim/2;
+	border-radius: $shapedim/2;
+}
+.type-2 {
+	width: $shapedim;
+	height: $shapedim;
+	background: $b3;
+}
+
+.type-3 {
+	width: $shapedim;
+	height: $shapedim/2;
+	position: relative;
+}
+.type-3:before {
+	content: "";
+	position: absolute;
+	top: -$shapedim/4;
+	left: 0;
+	width: 0;
+	height: 0;
+	border-left: $shapedim/2 solid transparent;
+	border-right: $shapedim/2 solid transparent;
+	border-bottom: $shapedim/4 solid;
+}
+.type-3:after {
+	content: "";
+	position: absolute;
+	bottom: -$shapedim/4px;
+	left: 0;
+	width: 0;
+	height: 0;
+	border-left: $shapedim/2 solid transparent;
+	border-right: $shapedim/2 solid transparent;
+	border-top: $shapedim/4px solid;
+}
+
+.types{
+	width: 100%;
+	display: flex;
+	flex-direction: row;
+	background: $b0;
+	max-width: 500px;
+	height: 60px;
+	// margin-top: 10px;
+}
+.cards{
+	width: 100%;
+	display: flex;
+	flex-direction: row;
+	align-items: flex-start;
+	background: #080808;
+	max-width: 500px;
+	height: 100px;	
+}
+
+.alert{
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	width: 100%;
+	color: white;
+	font-family: monospace;
+	padding: 20px;
+}
+
+.end-btn{
+	position: center;
+	// right: 5px;
+	bottom: 60px;
+}
+.card{
+    cursor: pointer;
+    width: 33.3333%;
+    height: 100%;
+	&:hover{
+		.shape{
+			background: white;
+			border-bottom: $shapedim solid white !important;
+		}
+	}
+	&.selected{
+		background: $b2;
+		.shape{
+			background: white;
+		}
+		.shape.type-1{
+			border-bottom: $shapedim solid white !important;
+		}
+	}
+	.shape{
+		background: $b3;
+	
+	}
+}
+
+.selection{
+	flex-direction: column;
+	width: 100%;
+	padding: 10px;
+}
+
+
+
+.type{
+	cursor: pointer;
+	width: 100%;
+	&:hover{
+		.shape{
+			background: white;
+			border-bottom: $shapedim solid white !important;
+		}
+	}
+	&.selected{
+		background: $b2;
+		.shape{
+			background: white;
+		}
+		.shape.type-1{
+			border-bottom: $shapedim solid white !important;
+		}
+	}
+	
+	.shape{
+		background: $b3;
+	
+	}
+}
