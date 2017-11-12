@@ -376,7 +376,7 @@ class Game
 
 
 		for i in [0...dice]
-			ang = Math.PI/4 + Math.PI*2/4 * i
+			ang = Math.PI/4 + Math.PI*2/8 * i
 
 			ox = Math.cos(ang) * DIM2/2.7
 			oy = Math.sin(ang) * DIM2/2.7 
@@ -458,7 +458,7 @@ class Game
 		
 	
 
-		for i in [0..3]
+		for i in [0..2]
 			@ctx.fillStyle = 'rgba(255,255,255,0.6)'
 			@ctx.beginPath()
 			pad = i * r * 4
@@ -600,10 +600,11 @@ class Game
 
 
 			# ATTACK TARGETS
-			if unit.type != 1 || (unit.dice == 0)
-				return
+			
 			
 			@getNeighbors unit,(x,y,x2,y2,n,unit)=>
+				if unit.type != 1 && unit.type != n.type
+					return
 				if n.player && n.player.id != unit.player.id && (unit.player.team_id != unit.player.team_id || unit.player.team_id == n.player.team_id == 0)
 					if (n.x <= @unitX < n.x+n.w) && (n.y <= @unitY < n.y+n.h)
 						@selected_enemy_unit = n
@@ -764,7 +765,7 @@ class NewGameView
 			className: 'lobby center'
 			h 'h1',
 				className: 'game-id'
-				'game #: '+@props.game.id
+				@props.game.id
 			h 'p',
 				className: 'sub'
 				'waiting for players to join lobby...'
@@ -811,13 +812,13 @@ class EndGameView
 				'game over #: '+@props.game.id
 
 			h 'div',
-					className: 'end-stats'
-					h 'div',{},h('span',{},'total turns'),@props.game.stats.total_turns
-					h 'div',{},h('span',{},'total time'),msToTime(@props.game.stats.total_time)
-					h 'div',{},h('span',{},'alive'),@props.game.stats.alive_players.map (player,i)=>
-						player.name+','
-					h 'div',{},h('span',{},'dead'),@props.game.stats.dead_players.map (player,i)=>
-						player.name+','
+				className: 'end-stats'
+				h 'div',{},h('span',{},'total turns'),@props.game.stats.total_turns
+				h 'div',{},h('span',{},'total time'),msToTime(@props.game.stats.total_time)
+				h 'div',{},h('span',{},'alive'),@props.game.stats.alive_players.map (player,i)=>
+					player.name+','
+				h 'div',{},h('span',{},'dead'),@props.game.stats.dead_players.map (player,i)=>
+					player.name+','
 					
 
 
@@ -927,6 +928,7 @@ class View extends Component
 					ref: (e)=>
 						@_canvas = e
 					id: 'game_canvas'
+			
 				h 'div',
 					className: 'game-stats'
 					h 'div',{},h('span',{},'game id'),@props.game.id
@@ -944,6 +946,11 @@ class View extends Component
 		h 'div',
 			className: 'wrapper'
 			content
+			@props.game && h 'div',
+				className: 'btn leave-btn'
+				onClick: ->
+					leaveGame()
+				'exit'
 
 
 moveUnit = (unit,x,y,split,split_x,split_y)->

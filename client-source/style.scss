@@ -104,6 +104,12 @@ input{
 	line-height: $dim/1.7;
 }
 
+.leave-btn{
+	position: absolute;
+	left: 10px;
+	bottom: 10px;
+}
+
 .join-btn{
 	float: right;
 }
@@ -148,6 +154,11 @@ canvas{
 	}
 }
 
+.game-id{
+	background: black;
+	color: yellow;
+	padding: 10px;
+}
 
 .game-stats{
 	position: absolute;

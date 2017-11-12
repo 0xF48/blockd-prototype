@@ -3771,7 +3771,7 @@ Game = class Game {
     }
     results = [];
     for (i = j = 0, ref = dice; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
-      ang = Math.PI / 4 + Math.PI * 2 / 4 * i;
+      ang = Math.PI / 4 + Math.PI * 2 / 8 * i;
       ox = Math.cos(ang) * DIM2 / 2.7;
       oy = Math.sin(ang) * DIM2 / 2.7;
       this.ctx.beginPath();
@@ -3869,7 +3869,7 @@ Game = class Game {
     var i, j, pad, results;
     this.ctx.beginPath();
     results = [];
-    for (i = j = 0; j <= 3; i = ++j) {
+    for (i = j = 0; j <= 2; i = ++j) {
       this.ctx.fillStyle = 'rgba(255,255,255,0.6)';
       this.ctx.beginPath();
       pad = i * r * 4;
@@ -4021,11 +4021,11 @@ Game = class Game {
         this.drawMoveRect(unit.x, unit.y + unit.h, unit.w, 1, unit.player.color, opac);
       }
       // ATTACK TARGETS
-      if (unit.type !== 1 || (unit.dice === 0)) {
-        return;
-      }
       this.getNeighbors(unit, (x, y, x2, y2, n, unit) => {
         var ref10, ref11, ref12;
+        if (unit.type !== 1 && unit.type !== n.type) {
+          return;
+        }
         if (n.player && n.player.id !== unit.player.id && (unit.player.team_id !== unit.player.team_id || (unit.player.team_id === (ref10 = n.player.team_id) && ref10 === 0))) {
           if (((n.x <= (ref11 = this.unitX) && ref11 < n.x + n.w)) && ((n.y <= (ref12 = this.unitY) && ref12 < n.y + n.h))) {
             this.selected_enemy_unit = n;
@@ -4200,7 +4200,7 @@ NewGameView = class NewGameView {
       className: 'lobby center'
     }, h('h1', {
       className: 'game-id'
-    }, 'game #: ' + this.props.game.id), h('p', {
+    }, this.props.game.id), h('p', {
       className: 'sub'
     }, 'waiting for players to join lobby...'), h('div', {
       className: 'join-lobby-wrapper'
@@ -4372,7 +4372,12 @@ View = class View extends Component {
     }
     return h('div', {
       className: 'wrapper'
-    }, content);
+    }, content, this.props.game && h('div', {
+      className: 'btn leave-btn',
+      onClick: function() {
+        return leaveGame();
+      }
+    }, 'exit'));
   }
 
 };
@@ -4542,7 +4547,7 @@ exports = module.exports = __webpack_require__(25)(undefined);
 
 
 // module
-exports.push([module.i, "* {\n  box-sizing: border-box; }\n\ndiv {\n  font-size: 20px;\n  font-family: Roboto; }\n\nhtml, body {\n  margin: 0;\n  padding: 0;\n  font-size: 16px;\n  color: gray; }\n\n.full-w {\n  width: 100%; }\n\n.hidden {\n  display: none; }\n\n.center {\n  align-items: center;\n  display: flex;\n  align-content: center;\n  justify-content: center; }\n\n.wrapper {\n  background: #262626;\n  overflow: hidden;\n  height: 100vh;\n  width: 100vw; }\n\n.player {\n  margin-bottom: 10px; }\n\n.tag {\n  margin-left: 30px; }\n\n.name {\n  margin-left: 30px; }\n\n.input-team-id {\n  width: 50px; }\n\ninput {\n  font-size: 20px;\n  background: #1a1a1a;\n  color: gray;\n  border: none;\n  height: 50px;\n  margin: 5px;\n  padding: 10px; }\n\n.lobby {\n  flex-direction: column; }\n\n.title {\n  margin-top: 10%;\n  color: white;\n  font-family: Merienda; }\n\n.btn {\n  cursor: pointer;\n  margin: 5px;\n  height: 50px;\n  background: #4d4d4d;\n  color: white;\n  display: inline-block;\n  padding: 10px;\n  font-family: Roboto;\n  line-height: 29.41176px; }\n\n.join-btn {\n  float: right; }\n\n.disabled {\n  opacity: 0.3;\n  cursor: default; }\n\n.card {\n  background: #1a1a1a; }\n  .card .shape {\n    background: gray; }\n  .card.selected {\n    background: #262626; }\n    .card.selected .shape {\n      background: white; }\n\n.ui {\n  flex-direction: column; }\n\ncanvas {\n  height: 100vh;\n  width: 100vw;\n  background: #1a1a1a; }\n\n.end-stats span {\n  margin-right: 20px;\n  opacity: 0.5; }\n\n.game-stats {\n  position: absolute;\n  right: 0;\n  top: 0;\n  align-items: flex-end;\n  flex-direction: column;\n  display: flex;\n  height: 40px;\n  width: 300px;\n  color: white;\n  padding: 10px; }\n  .game-stats div {\n    font-weight: 200;\n    font-family: monospace;\n    font-size: 14px;\n    float: left; }\n    .game-stats div span {\n      color: white;\n      opacity: 0.5;\n      margin-right: 10px; }\n\n.type-1 {\n  width: 0;\n  height: 0;\n  border-left: 15px solid transparent;\n  border-right: 15px solid transparent;\n  border-bottom: 30px solid gray;\n  background: none !important; }\n\n.type-0 {\n  width: 30px;\n  height: 30px;\n  -moz-border-radius: 15px;\n  -webkit-border-radius: 15px;\n  border-radius: 15px; }\n\n.type-2 {\n  width: 30px;\n  height: 30px;\n  background: gray; }\n\n.type-3 {\n  width: 30px;\n  height: 15px;\n  position: relative; }\n\n.type-3:before {\n  content: \"\";\n  position: absolute;\n  top: -7.5px;\n  left: 0;\n  width: 0;\n  height: 0;\n  border-left: 15px solid transparent;\n  border-right: 15px solid transparent;\n  border-bottom: 7.5px solid; }\n\n.type-3:after {\n  content: \"\";\n  position: absolute;\n  bottom: -7.5;\n  left: 0;\n  width: 0;\n  height: 0;\n  border-left: 15px solid transparent;\n  border-right: 15px solid transparent;\n  border-top: 7.5 solid; }\n\n.types {\n  width: 100%;\n  display: flex;\n  flex-direction: row;\n  background: #1a1a1a;\n  max-width: 500px;\n  height: 60px; }\n\n.cards {\n  width: 100%;\n  display: flex;\n  flex-direction: row;\n  align-items: flex-start;\n  background: #080808;\n  max-width: 500px;\n  height: 100px; }\n\n.alert {\n  position: absolute;\n  left: 0px;\n  top: 0px;\n  width: 100%;\n  color: white;\n  font-family: monospace;\n  padding: 20px; }\n\n.end-btn {\n  position: center;\n  bottom: 60px; }\n\n.card {\n  cursor: pointer;\n  width: 33.3333%;\n  height: 100%; }\n  .card:hover .shape {\n    background: white;\n    border-bottom: 30px solid white !important; }\n  .card.selected {\n    background: #4d4d4d; }\n    .card.selected .shape {\n      background: white; }\n    .card.selected .shape.type-1 {\n      border-bottom: 30px solid white !important; }\n  .card .shape {\n    background: gray; }\n\n.selection {\n  flex-direction: column;\n  width: 100%;\n  padding: 10px; }\n\n.type {\n  cursor: pointer;\n  width: 100%; }\n  .type:hover .shape {\n    background: white;\n    border-bottom: 30px solid white !important; }\n  .type.selected {\n    background: #4d4d4d; }\n    .type.selected .shape {\n      background: white; }\n    .type.selected .shape.type-1 {\n      border-bottom: 30px solid white !important; }\n  .type .shape {\n    background: gray; }\n", ""]);
+exports.push([module.i, "* {\n  box-sizing: border-box; }\n\ndiv {\n  font-size: 20px;\n  font-family: Roboto; }\n\nhtml, body {\n  margin: 0;\n  padding: 0;\n  font-size: 16px;\n  color: gray; }\n\n.full-w {\n  width: 100%; }\n\n.hidden {\n  display: none; }\n\n.center {\n  align-items: center;\n  display: flex;\n  align-content: center;\n  justify-content: center; }\n\n.wrapper {\n  background: #262626;\n  overflow: hidden;\n  height: 100vh;\n  width: 100vw; }\n\n.player {\n  margin-bottom: 10px; }\n\n.tag {\n  margin-left: 30px; }\n\n.name {\n  margin-left: 30px; }\n\n.input-team-id {\n  width: 50px; }\n\ninput {\n  font-size: 20px;\n  background: #1a1a1a;\n  color: gray;\n  border: none;\n  height: 50px;\n  margin: 5px;\n  padding: 10px; }\n\n.lobby {\n  flex-direction: column; }\n\n.title {\n  margin-top: 10%;\n  color: white;\n  font-family: Merienda; }\n\n.btn {\n  cursor: pointer;\n  margin: 5px;\n  height: 50px;\n  background: #4d4d4d;\n  color: white;\n  display: inline-block;\n  padding: 10px;\n  font-family: Roboto;\n  line-height: 29.41176px; }\n\n.leave-btn {\n  position: absolute;\n  left: 10px;\n  bottom: 10px; }\n\n.join-btn {\n  float: right; }\n\n.disabled {\n  opacity: 0.3;\n  cursor: default; }\n\n.card {\n  background: #1a1a1a; }\n  .card .shape {\n    background: gray; }\n  .card.selected {\n    background: #262626; }\n    .card.selected .shape {\n      background: white; }\n\n.ui {\n  flex-direction: column; }\n\ncanvas {\n  height: 100vh;\n  width: 100vw;\n  background: #1a1a1a; }\n\n.end-stats span {\n  margin-right: 20px;\n  opacity: 0.5; }\n\n.game-id {\n  background: black;\n  color: yellow;\n  padding: 10px; }\n\n.game-stats {\n  position: absolute;\n  right: 0;\n  top: 0;\n  align-items: flex-end;\n  flex-direction: column;\n  display: flex;\n  height: 40px;\n  width: 300px;\n  color: white;\n  padding: 10px; }\n  .game-stats div {\n    font-weight: 200;\n    font-family: monospace;\n    font-size: 14px;\n    float: left; }\n    .game-stats div span {\n      color: white;\n      opacity: 0.5;\n      margin-right: 10px; }\n\n.type-1 {\n  width: 0;\n  height: 0;\n  border-left: 15px solid transparent;\n  border-right: 15px solid transparent;\n  border-bottom: 30px solid gray;\n  background: none !important; }\n\n.type-0 {\n  width: 30px;\n  height: 30px;\n  -moz-border-radius: 15px;\n  -webkit-border-radius: 15px;\n  border-radius: 15px; }\n\n.type-2 {\n  width: 30px;\n  height: 30px;\n  background: gray; }\n\n.type-3 {\n  width: 30px;\n  height: 15px;\n  position: relative; }\n\n.type-3:before {\n  content: \"\";\n  position: absolute;\n  top: -7.5px;\n  left: 0;\n  width: 0;\n  height: 0;\n  border-left: 15px solid transparent;\n  border-right: 15px solid transparent;\n  border-bottom: 7.5px solid; }\n\n.type-3:after {\n  content: \"\";\n  position: absolute;\n  bottom: -7.5;\n  left: 0;\n  width: 0;\n  height: 0;\n  border-left: 15px solid transparent;\n  border-right: 15px solid transparent;\n  border-top: 7.5 solid; }\n\n.types {\n  width: 100%;\n  display: flex;\n  flex-direction: row;\n  background: #1a1a1a;\n  max-width: 500px;\n  height: 60px; }\n\n.cards {\n  width: 100%;\n  display: flex;\n  flex-direction: row;\n  align-items: flex-start;\n  background: #080808;\n  max-width: 500px;\n  height: 100px; }\n\n.alert {\n  position: absolute;\n  left: 0px;\n  top: 0px;\n  width: 100%;\n  color: white;\n  font-family: monospace;\n  padding: 20px; }\n\n.end-btn {\n  position: center;\n  bottom: 60px; }\n\n.card {\n  cursor: pointer;\n  width: 33.3333%;\n  height: 100%; }\n  .card:hover .shape {\n    background: white;\n    border-bottom: 30px solid white !important; }\n  .card.selected {\n    background: #4d4d4d; }\n    .card.selected .shape {\n      background: white; }\n    .card.selected .shape.type-1 {\n      border-bottom: 30px solid white !important; }\n  .card .shape {\n    background: gray; }\n\n.selection {\n  flex-direction: column;\n  width: 100%;\n  padding: 10px; }\n\n.type {\n  cursor: pointer;\n  width: 100%; }\n  .type:hover .shape {\n    background: white;\n    border-bottom: 30px solid white !important; }\n  .type.selected {\n    background: #4d4d4d; }\n    .type.selected .shape {\n      background: white; }\n    .type.selected .shape.type-1 {\n      border-bottom: 30px solid white !important; }\n  .type .shape {\n    background: gray; }\n", ""]);
 
 // exports
 

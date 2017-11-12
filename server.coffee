@@ -150,7 +150,8 @@ class Game
 		log "created a new game size:[#{@sizeX},#{@sizeY}] id:#{@id} type:#{@map_type}".cyan
 
 	setUnitType: (unit_id,type,player)->
-		type = _.clamp(Number(type),0,4)
+
+		type = _.clamp(Number(type),0,3)
 		unit = @units_map[unit_id]
 		if !unit
 			throw new Error 'bad unit'
@@ -493,11 +494,12 @@ class Game
 
 
 	removePlayer: (player)->
-		
 		@players.splice(@players.indexOf(player),1)
 		player.game = null
 		player.reset()
 		player.emitState()
+		if @players.length == 0
+			removeGame(@)
 		@needs_update = true
 	
 	addPlayer: (player)->
@@ -684,23 +686,25 @@ class Game
 
 
 	SpawnMapType1: ()->
+		total_units = @sizeX*@sizeY/2
 		for player,i in @alive_players
-			h_unit = new Unit
-				type: 3
-				dice: 4
-				w: 1
-				h: 1
-				player: player
-			h_x = Math.floor(Math.random()*@sizeX)
-			h_y = Math.floor(Math.random()*@sizeY)
-			pos = @findFreeHomeUnitSpot(h_x,h_y)
-			if pos[0]? && pos[1]?
-				log pos
-				h_unit.setPos(pos[0],pos[1])
-				player.addUnit(h_unit)
-			else
-				console.log pos,'failed to spawn home unit'
-		
+			for [0...total_units/@alive_players.length]
+				h_unit = new Unit
+					type: Math.floor(0+Math.random()*3)
+					dice: Math.floor(0+Math.random()*8)
+					actions: 1
+					w: 1
+					h: 1
+					player: player
+				h_x = Math.floor(Math.random()*@sizeX)
+				h_y = Math.floor(Math.random()*@sizeY)
+				pos = @findFreeSpot(h_x,h_y,1,1,4,@compareEmpty)
+				if pos[0]? && pos[1]?
+					h_unit.setPos(pos[0],pos[1])
+					player.addUnit(h_unit)
+				else
+					console.log pos,'failed to spawn unit'
+			
 
 
 
@@ -721,7 +725,7 @@ class Unit
 		@dice = opt.dice || 0
 		@actions = opt.actions || 0
 		@max_actions = 4
-		@max_dice = 4*@w*@h
+		@max_dice = 8
 		@linked_unit = opt.linked_unit
 		@player = opt.player || null
 		@neighbors_map = {}
@@ -845,7 +849,7 @@ class Unit
 		if !@actions
 			throw new Error 'cant attack, !can_move'
 		
-		if @type != 1
+		if @type != 1 && unit.type != @type
 			throw new Error 'non attack units cant attack other units.'
 		
 		if @dice == 0
@@ -867,10 +871,8 @@ class Unit
 			unit.unlink()
 			@player.units.push unit
 		else
-			@actions -= 1
-			if unit.type == 1 || unit.type == 2
-				@dice = 0
-
+			@dice = 0
+	
 		@grid.needs_update = true
 			
 		
@@ -900,7 +902,7 @@ class Player
 		@max_cards = 3
 		@units = []
 		@team_id = 0
-		@turn_time = 60000
+		@turn_time = 120000
 
 		@color = randomColor(0.7,0.99).values.rgb
 		
@@ -1161,7 +1163,9 @@ games_map = {}
 games = []
 
 
-
+removeGame = (game)->
+	delete games_map[game.id]
+	games.splice(games.indexOf(game),1)
 
 createGame = (game)->
 	games_map[game.id] = game
@@ -1176,6 +1180,8 @@ createGame new Game
 
 
 
+printStats = ->
+	log games.length+" games | "+players.length+" players | "+instances.length+" instances"
 
 
 
@@ -1183,9 +1189,7 @@ createGame new Game
 
 
 
-
-
-
+setInterval printStats,60000
 
 
 
@@ -1236,7 +1240,6 @@ app.get '/', (req,res)->
 
 
 
-
 # global 404 view
 app.get '*', (req,res,next)->
 	res.status(404).send ':v'
@@ -1255,10 +1258,10 @@ io.on 'connection', (socket)->
 	inst_id = socket.handshake.session.instance_id
 	inst = instances_map[inst_id]
 
-	# if inst
-	# 	inst.reconnect(socket)
-	# else
-	inst = new Instance socket
+	if inst
+		inst.reconnect(socket)
+	else
+		inst = new Instance socket
 	instances_map[inst.id] = inst
 	instances.push inst
 
