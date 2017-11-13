@@ -151,28 +151,28 @@ class Game
 
 	setUnitType: (unit_id,type,player)->
 
-		type = _.clamp(Number(type),0,3)
+		type = _.clamp(Number(type),0,2)
 		unit = @units_map[unit_id]
 		if !unit
 			throw new Error 'bad unit'
 		if unit.player != player
 			throw new Error 'bad player'
-		if !unit.actions
-			throw new Error 'cant move'
+		# if !unit.actions
+		# 	throw new Error 'cant move'
 
-		dice_needed = 1
-		if type == 3
-			dice_needed = 4
+		# dice_needed = 1
+		# if type == 3
+		# 	dice_needed = 4
 
-		if unit.dice < dice_needed
-			throw new Error 'not enough dice'
+		# if unit.dice < dice_needed
+		# 	throw new Error 'not enough dice'
 
-		unit.dice -= dice_needed
+		# unit.dice -= dice_needed
 		unit.type = type
 		if unit.linked_unit
 			unit.linked_unit.linked_unit = null
 			unit.linked_unit = null
-		unit.actions -= 1
+		unit.actions = 0
 		@needs_update = true
 
 
@@ -257,7 +257,7 @@ class Game
 		if unit.player != player
 			throw new Errpr 'cant move unit, bad player'
 		if !unit.actions
-			throw new Error 'cant move unit, !can_move'
+			throw new Error 'cant move unit, no action points'
 
 
 		if x < unit.x
@@ -284,7 +284,7 @@ class Game
 				if @grid[x+ux]?[y+uy] != -1 && @grid[x+ux][y+uy] != unit
 					if @grid[x+ux][y+uy] && @grid[x+ux][y+uy].player == unit.player
 						@needs_update = true
-						return unit.link(@grid[x+ux][y+uy])
+						return unit.moveDice(@grid[x+ux][y+uy])
 
 					else
 						throw new Error 'cant move unit, taken'
@@ -299,7 +299,7 @@ class Game
 				@grid[x+ux][y+uy] = unit
 
 		unit.setPos(x,y)
-		unit.actions -= 1
+		unit.actions = 0
 		
 		
 		@needs_update = true
@@ -743,6 +743,19 @@ class Unit
 			@neighbors.push unit
 			@neighbors_map[unit.id] = unit
 
+	moveDice: (unit)->
+		if !@dice
+			throw new Error 'cant move dice, no dice.'
+
+		rem = (unit.dice + @dice) - unit.max_dice
+		if rem > 0
+			@dice = rem
+			unit.dice = unit.max_dice
+		else
+			unit.dice += @dice
+			@dice = 0
+		@actions--
+
 	unlink: ()->
 		if @linked_unit
 			@linked_unit.linked_unit = null
@@ -833,13 +846,16 @@ class Unit
 		return total
 
 	# public roll method, roll depends on unit type.
-	roll: ()->
+	roll: (attacker)->
 
-		if @type == 2
-			v = @_roll() * 2
-		else 
+		if !attacker && @type == 2
+			v = @_roll()*3
+		else if attacker && @type == 1
+			v = @_roll()*2
+		else
 			v = @_roll()
-	
+
+		
 		if @linked_unit && @link_adjacent
 			v += @linked_unit._roll()
 		
@@ -849,13 +865,15 @@ class Unit
 		if !@actions
 			throw new Error 'cant attack, !can_move'
 		
-		if @type != 1 && unit.type != @type
-			throw new Error 'non attack units cant attack other units.'
+		if @type == 2
+			throw new Error 'defensive units cant attack other units.'
 		
 		if @dice == 0
 			throw new Error 'empties cant attack'
-		vA = unit.roll()
-		vB = @roll()
+
+
+		vA = unit.roll(false)
+		vB = @roll(true)
 		if @linked_unit && @link_adjacent
 			vB += @linked_unit._roll()
 
@@ -927,16 +945,16 @@ class Player
 				unit.addOneDice()
 			
 			
-			for n in unit.neighbors
-				if n.type == 4 
-					unit.addOneDice()
+		# 	for n in unit.neighbors
+		# 		if n.type == 4 
+		# 			unit.addOneDice()
 
-		# resupply
-		for unit in @units
-			if unit.type == 0
-				for n in unit.neighbors
-					if (n.type == 1 || n.type == 2 || n.type == 3) && n.player == unit.player
-						unit.giveDice(n)
+		# # resupply
+		# for unit in @units
+		# 	if unit.type == 0
+		# 		for n in unit.neighbors
+		# 			if (n.type == 1 || n.type == 2 || n.type == 3) && n.player == unit.player
+		# 				unit.giveDice(n)
 
 		# @equalizeUnits()
 

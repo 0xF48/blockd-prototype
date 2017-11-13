@@ -481,9 +481,14 @@ class Game
 
 
 	onNeighborUnit: (x,y,x2,y2,n,unit)=>
-		if (unit.type == 0 && n.player == unit.player) || (unit.type != 4 && n.type == 4 && unit.player)
+		if (n.type == 4)
 			if unit.linked_unit_id != n.id
-				@drawPipe(x,y,x2,y2,rgba(unit.player.color,0.9,0.4),4)
+				if !unit.player
+					color = @resource_color
+				else
+					color = unit.player.color
+
+				@drawPipe(x,y,x2,y2,rgba(color,0.3,0.4),8)
 
 
 
@@ -535,14 +540,14 @@ class Game
 				if !n1
 					draw_left = false
 				else
-					if n1 != -1 && (unit.player_id != n1.player_id || n1.type != unit.type)
+					if n1 != -1 && (unit.player_id != n1.player_id || !unit.dice)
 						draw_left = false
 
 						
 				if !n2
 					draw_right = false
 				else
-					if n2 != -1 && (unit.player_id != n2.player_id || n2.type != unit.type)
+					if n2 != -1 && (unit.player_id != n2.player_id || !unit.dice)
 						draw_right = false
 
 
@@ -571,14 +576,14 @@ class Game
 				if !n1
 					draw_top = false
 				else
-					if n1 != -1 && (unit.player_id != n1.player_id || n1.type != unit.type)
+					if n1 != -1 && (unit.player_id != n1.player_id || !unit.dice)
 						draw_top = false
 
 						
 				if !n2
 					draw_bot = false
 				else
-					if n2 != -1 && (unit.player_id != n2.player_id || n2.type != unit.type)
+					if n2 != -1 && (unit.player_id != n2.player_id || !unit.dice)
 						draw_bot = false
 
 
@@ -603,7 +608,7 @@ class Game
 			
 			
 			@getNeighbors unit,(x,y,x2,y2,n,unit)=>
-				if unit.type != 1 && unit.type != n.type
+				if unit.type == 2 || !unit.dice
 					return
 				if n.player && n.player.id != unit.player.id && (unit.player.team_id != unit.player.team_id || unit.player.team_id == n.player.team_id == 0)
 					if (n.x <= @unitX < n.x+n.w) && (n.y <= @unitY < n.y+n.h)
