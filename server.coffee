@@ -732,18 +732,19 @@ class Unit
 		@player = opt.player || null
 		@neighbors_map = {}
 		@neighbors = []
-		
+
 
 	resetNeighbors: ->
-		# @neighbor_ids = []
 		@neighbors = []
 		@neighbors_map = {}
+
 
 	addNeighbor: (unit)->
 		if !@neighbors_map[unit.id]
 			# @neighbor_ids.push unit.id
 			@neighbors.push unit
 			@neighbors_map[unit.id] = unit
+
 
 	moveDice: (unit)->
 		if !@dice
@@ -758,10 +759,12 @@ class Unit
 			@dice = 0
 		@actions--
 
+
 	unlink: ()->
 		if @linked_unit
 			@linked_unit.linked_unit = null
 		@linked_unit = null
+
 
 	link: (unit)->
 		if unit == @linked_unit
@@ -844,16 +847,15 @@ class Unit
 	_roll: ()->
 		total = 0
 		for i in [0...@dice]
-			total += 1+Math.floor(Math.random()*6)
+			total += Math.random()
 		return total
 
 	# public roll method, roll depends on unit type.
 	roll: (attacker)->
-
 		if !attacker && @type == 2
-			v = @_roll()*4
-		else if attacker && @type == 1
 			v = @_roll()*2
+		else if attacker && @type == 1
+			v = @_roll()*1.5
 		else
 			v = @_roll()
 
@@ -892,6 +894,8 @@ class Unit
 			@player.units.push unit
 		else
 			@dice = 0
+
+		@actions--
 	
 		@grid.needs_update = true
 			
@@ -947,9 +951,9 @@ class Player
 				unit.addOneDice()
 			
 			
-		# 	for n in unit.neighbors
-		# 		if n.type == 4 
-		# 			unit.addOneDice()
+			for n in unit.neighbors
+				if n.type == 4 
+					unit.addOneDice()
 
 		# # resupply
 		# for unit in @units

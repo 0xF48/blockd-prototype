@@ -1063,7 +1063,7 @@ updateView = (new_state)->
 	view = render(h(View,state),window.document.body,view)
 
 
-sock = io('http://localhost:3330')
+sock = io('http://69.138.151.79:3330')
 
 
 

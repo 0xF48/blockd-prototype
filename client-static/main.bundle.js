@@ -4505,7 +4505,7 @@ updateView = function(new_state) {
   return view = render(h(View, state), window.document.body, view);
 };
 
-sock = io('http://localhost:3330');
+sock = io('http://69.138.151.79:3330');
 
 sock.on('err', function(msg) {
   return console.error(msg);
