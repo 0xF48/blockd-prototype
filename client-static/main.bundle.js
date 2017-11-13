@@ -3896,7 +3896,7 @@ Game = class Game {
 
   onNeighborUnit(x, y, x2, y2, n, unit) {
     var color;
-    if (n.type === 4) {
+    if (n.type === 4 && unit.type !== 4) {
       if (unit.linked_unit_id !== n.id) {
         if (!unit.player) {
           color = this.resource_color;
@@ -4269,9 +4269,11 @@ JoinView = class JoinView extends Component {
     super(props);
     this.state = {
       game_id: null,
-      type: null,
-      sizeX: null,
-      sizeY: null
+      type: 1,
+      sizeX: 8,
+      sizeY: 8,
+      resource_factor: 1,
+      unit_factor: 1
     };
   }
 
@@ -4287,31 +4289,61 @@ JoinView = class JoinView extends Component {
     }, h('input', {
       type: 'text',
       placeholder: 'game id',
-      onChange: (e) => {
-        return this.state.game_id = e.target.value;
+      value: this.state.game_id,
+      onInput: (e) => {
+        return this.setState({
+          game_id: e.target.value
+        });
       }
     }), h('div', {
       className: 'btn join-btn',
       onClick: () => {
         return joinGame(this.state.game_id);
       }
-    }, 'join')), h('br'), h('br'), h('input', {
+    }, 'join')), h('br'), h('br'), h('span', {}, 'type (1-3)'), h('input', {
       type: 'number',
       placeholder: 'type (1-3)',
-      onChange: (e) => {
-        return this.state.type = e.target.value;
+      value: this.state.type,
+      onInput: (e) => {
+        return this.setState({
+          type: e.target.value
+        });
       }
-    }), h('input', {
+    }), h('span', {}, 'sizeX (8 - 100)'), h('input', {
       type: 'number',
       placeholder: 'sizeX (8 - 100)',
-      onChange: (e) => {
-        return this.state.sizeX = e.target.value;
+      value: this.state.sizeX,
+      onInput: (e) => {
+        return this.setState({
+          sizeX: e.target.value
+        });
       }
-    }), h('input', {
+    }), h('span', {}, 'sizeY (8 - 100)'), h('input', {
       type: 'number',
       placeholder: 'sizeY (8 - 100)',
-      onChange: (e) => {
-        return this.state.sizeY = e.target.value;
+      value: this.state.sizeY,
+      onInput: (e) => {
+        return this.setState({
+          sizeY: e.target.value
+        });
+      }
+    }), h('span', {}, 'resource_factor (0 - 10)'), h('input', {
+      type: 'number',
+      placeholder: 'resource_factor (0 - 10)',
+      value: this.state.resource_factor,
+      onInput: (e) => {
+        return this.setState({
+          resource_factor: e.target.value
+        });
+      }
+    }), h('span', {}, 'unit_factor (0 - 10)'), h('input', {
+      type: 'number',
+      placeholder: 'unit_factor (0 - 10)',
+      value: this.state.unit_factor,
+      onInput: (e) => {
+        return this.setState({
+          unit_factor: e.target.value
+        });
       }
     }), h('div', {
       className: 'btn join-btn',
@@ -4510,7 +4542,7 @@ setInterval(function() {
 
 updateView();
 
-joinGame('dev');
+// joinGame('dev')
 
 
 /***/ }),
@@ -4553,7 +4585,7 @@ exports = module.exports = __webpack_require__(25)(undefined);
 
 
 // module
-exports.push([module.i, "* {\n  box-sizing: border-box; }\n\ndiv {\n  font-size: 20px;\n  font-family: Roboto; }\n\nhtml, body {\n  margin: 0;\n  padding: 0;\n  font-size: 16px;\n  color: gray; }\n\n.full-w {\n  width: 100%; }\n\n.hidden {\n  display: none; }\n\n.center {\n  align-items: center;\n  display: flex;\n  align-content: center;\n  justify-content: center; }\n\n.wrapper {\n  background: #262626;\n  overflow: hidden;\n  height: 100vh;\n  width: 100vw; }\n\n.player {\n  margin-bottom: 10px; }\n\n.tag {\n  margin-left: 30px; }\n\n.name {\n  margin-left: 30px; }\n\n.input-team-id {\n  width: 50px; }\n\ninput {\n  font-size: 20px;\n  background: #1a1a1a;\n  color: gray;\n  border: none;\n  height: 50px;\n  margin: 5px;\n  padding: 10px; }\n\n.lobby {\n  flex-direction: column; }\n\n.title {\n  margin-top: 10%;\n  color: white;\n  font-family: Merienda; }\n\n.btn {\n  cursor: pointer;\n  margin: 5px;\n  height: 50px;\n  background: #4d4d4d;\n  color: white;\n  display: inline-block;\n  padding: 10px;\n  font-family: Roboto;\n  line-height: 29.41176px; }\n\n.leave-btn {\n  position: absolute;\n  left: 10px;\n  bottom: 10px; }\n\n.join-btn {\n  float: right; }\n\n.disabled {\n  opacity: 0.3;\n  cursor: default; }\n\n.card {\n  background: #1a1a1a; }\n  .card .shape {\n    background: gray; }\n  .card.selected {\n    background: #262626; }\n    .card.selected .shape {\n      background: white; }\n\n.ui {\n  flex-direction: column; }\n\ncanvas {\n  height: 100vh;\n  width: 100vw;\n  background: #1a1a1a; }\n\n.end-stats span {\n  margin-right: 20px;\n  opacity: 0.5; }\n\n.game-id {\n  background: black;\n  color: yellow;\n  padding: 10px; }\n\n.game-stats {\n  position: absolute;\n  right: 0;\n  top: 0;\n  align-items: flex-end;\n  flex-direction: column;\n  display: flex;\n  height: 40px;\n  width: 300px;\n  color: white;\n  padding: 10px; }\n  .game-stats div {\n    font-weight: 200;\n    font-family: monospace;\n    font-size: 14px;\n    float: left; }\n    .game-stats div span {\n      color: white;\n      opacity: 0.5;\n      margin-right: 10px; }\n\n.type-1 {\n  width: 0;\n  height: 0;\n  border-left: 15px solid transparent;\n  border-right: 15px solid transparent;\n  border-bottom: 30px solid gray;\n  background: none !important; }\n\n.type-0 {\n  width: 30px;\n  height: 30px;\n  -moz-border-radius: 15px;\n  -webkit-border-radius: 15px;\n  border-radius: 15px; }\n\n.type-2 {\n  width: 30px;\n  height: 30px;\n  background: gray; }\n\n.type-3 {\n  width: 30px;\n  height: 15px;\n  position: relative; }\n\n.type-3:before {\n  content: \"\";\n  position: absolute;\n  top: -7.5px;\n  left: 0;\n  width: 0;\n  height: 0;\n  border-left: 15px solid transparent;\n  border-right: 15px solid transparent;\n  border-bottom: 7.5px solid; }\n\n.type-3:after {\n  content: \"\";\n  position: absolute;\n  bottom: -7.5;\n  left: 0;\n  width: 0;\n  height: 0;\n  border-left: 15px solid transparent;\n  border-right: 15px solid transparent;\n  border-top: 7.5 solid; }\n\n.types {\n  width: 100%;\n  display: flex;\n  flex-direction: row;\n  background: #1a1a1a;\n  max-width: 500px;\n  height: 60px; }\n\n.cards {\n  width: 100%;\n  display: flex;\n  flex-direction: row;\n  align-items: flex-start;\n  background: #080808;\n  max-width: 500px;\n  height: 100px; }\n\n.alert {\n  position: absolute;\n  left: 0px;\n  top: 0px;\n  width: 100%;\n  color: white;\n  font-family: monospace;\n  padding: 20px; }\n\n.end-btn {\n  position: center;\n  bottom: 60px; }\n\n.card {\n  cursor: pointer;\n  width: 33.3333%;\n  height: 100%; }\n  .card:hover .shape {\n    background: white;\n    border-bottom: 30px solid white !important; }\n  .card.selected {\n    background: #4d4d4d; }\n    .card.selected .shape {\n      background: white; }\n    .card.selected .shape.type-1 {\n      border-bottom: 30px solid white !important; }\n  .card .shape {\n    background: gray; }\n\n.selection {\n  flex-direction: column;\n  width: 100%;\n  padding: 10px; }\n\n.type {\n  cursor: pointer;\n  width: 100%; }\n  .type:hover .shape {\n    background: white;\n    border-bottom: 30px solid white !important; }\n  .type.selected {\n    background: #4d4d4d; }\n    .type.selected .shape {\n      background: white; }\n    .type.selected .shape.type-1 {\n      border-bottom: 30px solid white !important; }\n  .type .shape {\n    background: gray; }\n", ""]);
+exports.push([module.i, "* {\n  box-sizing: border-box; }\n\ndiv {\n  font-size: 20px;\n  font-family: Roboto; }\n\nhtml, body {\n  margin: 0;\n  padding: 0;\n  font-size: 16px;\n  color: gray; }\n\nhtml {\n  overflow: hidden;\n  overflow-y: scroll; }\n\n.full-w {\n  width: 100%; }\n\n.hidden {\n  display: none; }\n\n.center {\n  align-items: center;\n  display: flex;\n  align-content: center;\n  justify-content: center; }\n\n.wrapper {\n  background: #262626;\n  overflow: hidden;\n  min-height: 100vh;\n  width: 100vw;\n  height: auto; }\n\n.player {\n  margin-bottom: 10px; }\n\n.tag {\n  margin-left: 30px; }\n\n.name {\n  margin-left: 30px; }\n\n.input-team-id {\n  width: 50px; }\n\ninput {\n  font-size: 20px;\n  background: #1a1a1a;\n  color: gray;\n  border: none;\n  height: 50px;\n  margin: 5px;\n  padding: 10px; }\n\n.lobby {\n  height: auto;\n  flex-direction: column; }\n\n.title {\n  margin-top: 10%;\n  color: white;\n  font-family: Merienda; }\n\n.btn {\n  cursor: pointer;\n  margin: 5px;\n  height: 50px;\n  background: #4d4d4d;\n  color: white;\n  display: inline-block;\n  padding: 10px;\n  font-family: Roboto;\n  line-height: 29.41176px; }\n\n.leave-btn {\n  position: absolute;\n  left: 10px;\n  bottom: 10px; }\n\n.join-btn {\n  float: right; }\n\n.disabled {\n  opacity: 0.3;\n  cursor: default; }\n\n.card {\n  background: #1a1a1a; }\n  .card .shape {\n    background: gray; }\n  .card.selected {\n    background: #262626; }\n    .card.selected .shape {\n      background: white; }\n\n.ui {\n  flex-direction: column; }\n\ncanvas {\n  height: 100vh;\n  width: 100vw;\n  background: #1a1a1a; }\n\n.end-stats span {\n  margin-right: 20px;\n  opacity: 0.5; }\n\n.game-id {\n  background: black;\n  color: yellow;\n  padding: 10px; }\n\n.game-stats {\n  position: absolute;\n  right: 0;\n  top: 0;\n  align-items: flex-end;\n  flex-direction: column;\n  display: flex;\n  height: 40px;\n  width: 300px;\n  color: white;\n  padding: 10px; }\n  .game-stats div {\n    font-weight: 200;\n    font-family: monospace;\n    font-size: 14px;\n    float: left; }\n    .game-stats div span {\n      color: white;\n      opacity: 0.5;\n      margin-right: 10px; }\n\n.type-1 {\n  width: 0;\n  height: 0;\n  border-left: 15px solid transparent;\n  border-right: 15px solid transparent;\n  border-bottom: 30px solid gray;\n  background: none !important; }\n\n.type-0 {\n  width: 30px;\n  height: 30px;\n  -moz-border-radius: 15px;\n  -webkit-border-radius: 15px;\n  border-radius: 15px; }\n\n.type-2 {\n  width: 30px;\n  height: 30px;\n  background: gray; }\n\n.type-3 {\n  width: 30px;\n  height: 15px;\n  position: relative; }\n\n.type-3:before {\n  content: \"\";\n  position: absolute;\n  top: -7.5px;\n  left: 0;\n  width: 0;\n  height: 0;\n  border-left: 15px solid transparent;\n  border-right: 15px solid transparent;\n  border-bottom: 7.5px solid; }\n\n.type-3:after {\n  content: \"\";\n  position: absolute;\n  bottom: -7.5;\n  left: 0;\n  width: 0;\n  height: 0;\n  border-left: 15px solid transparent;\n  border-right: 15px solid transparent;\n  border-top: 7.5 solid; }\n\n.types {\n  width: 100%;\n  display: flex;\n  flex-direction: row;\n  background: #1a1a1a;\n  max-width: 500px;\n  height: 60px; }\n\n.cards {\n  width: 100%;\n  display: flex;\n  flex-direction: row;\n  align-items: flex-start;\n  background: #080808;\n  max-width: 500px;\n  height: 100px; }\n\n.alert {\n  position: absolute;\n  left: 0px;\n  top: 0px;\n  width: 100%;\n  color: white;\n  font-family: monospace;\n  padding: 20px; }\n\n.end-btn {\n  position: center;\n  bottom: 60px; }\n\n.card {\n  cursor: pointer;\n  width: 33.3333%;\n  height: 100%; }\n  .card:hover .shape {\n    background: white;\n    border-bottom: 30px solid white !important; }\n  .card.selected {\n    background: #4d4d4d; }\n    .card.selected .shape {\n      background: white; }\n    .card.selected .shape.type-1 {\n      border-bottom: 30px solid white !important; }\n  .card .shape {\n    background: gray; }\n\n.selection {\n  flex-direction: column;\n  width: 100%;\n  padding: 10px; }\n\n.type {\n  cursor: pointer;\n  width: 100%; }\n  .type:hover .shape {\n    background: white;\n    border-bottom: 30px solid white !important; }\n  .type.selected {\n    background: #4d4d4d; }\n    .type.selected .shape {\n      background: white; }\n    .type.selected .shape.type-1 {\n      border-bottom: 30px solid white !important; }\n  .type .shape {\n    background: gray; }\n", ""]);
 
 // exports
 

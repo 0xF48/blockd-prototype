@@ -122,6 +122,8 @@ class Game
 		@id = opt.id || uuid()
 		@sizeX = opt.sizeX
 		@sizeY = opt.sizeY
+		@resource_factor = opt.resource_factor || 1
+		@unit_factor = opt.unit_factor || 1
 		
 		
 		@grid = @makeGrid(@sizeX,@sizeY)
@@ -565,7 +567,7 @@ class Game
 			# log 'true (base)'
 			return true
 
-		log 'found home unit spot',spot
+		# log 'found home unit spot',spot
 		if spot[0] != null && spot[0] != null
 			spot[0] += 1
 			spot[1] += 1
@@ -594,7 +596,7 @@ class Game
 				found_y = fy
 				return false
 
-		log 'found free spot',found_x,found_y
+		# log 'found free spot',found_x,found_y
 
 		return [found_x,found_y]
 
@@ -668,7 +670,7 @@ class Game
 		my = Math.floor(@sizeY/2)
 		mx = Math.floor(@sizeX/2)
 
-		l = (@sizeX*@sizeY)/12
+		l = (@sizeX*@sizeY)/12*@resource_factor
 		for i in [0...l]
 			r_x = Math.floor(Math.random()*@sizeX)
 			r_y = Math.floor(Math.random()*@sizeY)
@@ -686,7 +688,7 @@ class Game
 
 
 	SpawnMapType1: ()->
-		total_units = @sizeX*@sizeY/2
+		total_units = @sizeX*@sizeY/2*@unit_factor
 		for player,i in @alive_players
 			for [0...total_units/@alive_players.length]
 				h_unit = new Unit
@@ -849,7 +851,7 @@ class Unit
 	roll: (attacker)->
 
 		if !attacker && @type == 2
-			v = @_roll()*3
+			v = @_roll()*4
 		else if attacker && @type == 1
 			v = @_roll()*2
 		else
@@ -1041,6 +1043,9 @@ class Player
 			sizeX: _.clamp(Number(state.sizeX),8,100)
 			sizeY: _.clamp(Number(state.sizeY),8,100)
 			type: _.clamp(Number(state.type),1,3)
+			unit_factor: _.clamp(Number(state.unit_factor),0,10)
+			resource_factor: _.clamp(Number(state.resource_factor),0,10)
+		log 'CREATE GAME'
 		game.addPlayer(@)
 
 
@@ -1137,7 +1142,7 @@ class Player
 
 class Instance
 	constructor: (socket)->
-		log 'new instance'
+		log 'new instance',socket.handshake.address
 		@id = uuid()
 		@socket = socket
 		@session = @socket.handshake.session
@@ -1162,6 +1167,7 @@ class Instance
 	reconnect: (@socket)->
 		log 'reconnect instance'
 		@player.bindSocket(@socket)
+		@player.emitState()
 
 
 		
@@ -1191,10 +1197,10 @@ createGame = (game)->
 	return game
 
 
-createGame new Game
-	sizeX: 8
-	sizeY: 8
-	id: 'dev'
+# createGame new Game
+# 	sizeX: 8
+# 	sizeY: 8
+# 	id: 'dev'
 
 
 
@@ -1273,6 +1279,7 @@ app.get '*', (req,res,next)->
 	throw err
 
 io.on 'connection', (socket)->
+	log socket.handshake.session.instance_id
 	inst_id = socket.handshake.session.instance_id
 	inst = instances_map[inst_id]
 

@@ -481,7 +481,7 @@ class Game
 
 
 	onNeighborUnit: (x,y,x2,y2,n,unit)=>
-		if (n.type == 4)
+		if (n.type == 4 && unit.type != 4)
 			if unit.linked_unit_id != n.id
 				if !unit.player
 					color = @resource_color
@@ -843,9 +843,11 @@ class JoinView extends Component
 		super(props)
 		@state = 
 			game_id: null
-			type: null
-			sizeX: null
-			sizeY: null
+			type: 1
+			sizeX: 8
+			sizeY: 8
+			resource_factor: 1
+			unit_factor: 1
 
 	render: ->
 		h 'div',
@@ -861,8 +863,11 @@ class JoinView extends Component
 				h 'input',
 					type: 'text'
 					placeholder: 'game id'
-					onChange: (e)=>
-						@state.game_id = e.target.value
+					value: @state.game_id
+					onInput: (e)=>
+						@setState
+							game_id: e.target.value
+						
 				h 'div',
 					className: 'btn join-btn'
 					onClick: =>
@@ -870,21 +875,50 @@ class JoinView extends Component
 					'join'
 			h 'br'
 			h 'br'
+			h 'span',{},'type (1-3)'
 			h 'input',
 				type: 'number'
 				placeholder: 'type (1-3)'
-				onChange: (e)=>
-					@state.type = e.target.value
+				value: @state.type
+				onInput: (e)=>
+					@setState
+						type: e.target.value
+			
+			h 'span',{},'sizeX (8 - 100)'
 			h 'input',
 				type: 'number'
 				placeholder: 'sizeX (8 - 100)'
-				onChange: (e)=>
-					@state.sizeX =  e.target.value
+				value: @state.sizeX
+				onInput: (e)=>
+					@setState
+						sizeX: e.target.value
+			h 'span',{},'sizeY (8 - 100)'
 			h 'input',
 				type: 'number'
 				placeholder: 'sizeY (8 - 100)'
-				onChange: (e)=>
-					@state.sizeY =  e.target.value
+				value: @state.sizeY
+				onInput: (e)=>
+					@setState
+						sizeY: e.target.value
+					
+			h 'span',{},'resource_factor (0 - 10)'
+			h 'input',
+				type: 'number'
+				placeholder: 'resource_factor (0 - 10)'
+				value: @state.resource_factor
+				onInput: (e)=>
+					@setState
+						resource_factor: e.target.value
+			h 'span',{},'unit_factor (0 - 10)'
+			h 'input',
+				type: 'number'
+				placeholder: 'unit_factor (0 - 10)'
+				value: @state.unit_factor
+				onInput: (e)=>
+					@setState
+						unit_factor: e.target.value
+					
+
 			h 'div',
 				className: 'btn join-btn'
 				onClick: =>
@@ -1066,6 +1100,6 @@ updateView()
 
 
 
-joinGame('dev')
+# joinGame('dev')
 
 
