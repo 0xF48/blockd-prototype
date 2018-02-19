@@ -8,12 +8,21 @@ UPAD = 2
 log = console.log.bind(console)
 io = require 'socket.io-client'
 
+CFG = require '../config.json'
+SERVER = CFG.server
+
 GRID_DIR = [
 	[0,-1]
 	[-1,0]
 	[0,1]
 	[1,0]
 ]
+
+roundRect = require './rounded-rect.js'
+fillRect = (ctx, x, y, width, height, radius)->
+	roundRect(ctx, x, y, width, height, radius)
+	ctx.fill()
+
 
 msToTime = (duration)->
 	milliseconds = parseInt((duration%1000)/100)
@@ -344,7 +353,7 @@ class Game
 				else if type == 1
 					lineToPoly(@ctx,px,py,3,r)
 				else if type == 2
-					@ctx.rect(px-r,py-r,r*2,r*2)
+					roundRect(@ctx,px-r,py-r,r*2,r*2)
 				else if type == 3
 					lineToPoly(@ctx,px,py,6,r)
 
@@ -467,7 +476,7 @@ class Game
 			else if i == 1
 				lineToPoly(@ctx,px,py+pad,3,r)
 			else if i == 2
-				@ctx.rect(px-r,py-r+pad,r*2,r*2)
+				roundRect(@ctx,px-r,py-r+pad,r*2,r*2)
 			else if i == 3
 				lineToPoly(@ctx,px,py+pad,6,r)
 			@ctx.closePath()
@@ -475,7 +484,7 @@ class Game
 			
 			if i == type
 				@ctx.fillStyle = 'rgba(255,255,255,0.2)'
-				@ctx.fillRect(px-r-r/2,py-r+pad-r/2,r*3,r*3)
+				fillRect(@ctx,px-r-r/2,py-r+pad-r/2,r*3,r*3)
 				
 				
 
@@ -519,7 +528,7 @@ class Game
 		@ctx.strokeStyle = rgba(color || @resource_color,opac,0.5)
 		@ctx.fillStyle = rgba(color || @resource_color,opac/2,0.5)
 		@ctx.beginPath()
-		@ctx.rect(x*DIM2,y*DIM2, DIM2*w,DIM2*h)
+		roundRect(@ctx,x*DIM2,y*DIM2, DIM2*w,DIM2*h)
 		@ctx.closePath()
 		@ctx.fill()
 		@ctx.stroke()
@@ -662,7 +671,7 @@ class Game
 					
 				if !ok
 					@ctx.fillStyle = '#FF0000'
-					@ctx.fillRect((@unitX)*DIM2+UPAD,(@unitY)*DIM2+UPAD, DIM2-UPAD*2,DIM2-UPAD*2)
+					fillRect(@ctx,(@unitX)*DIM2+UPAD,(@unitY)*DIM2+UPAD, DIM2-UPAD*2,DIM2-UPAD*2)
 					return
 
 				@placeholder_unit_ok = true
@@ -680,12 +689,12 @@ class Game
 			@ctx.strokeStyle = rgba(color,1,@selected_unit_move && 0.1 || 0.5)
 			@ctx.lineWidth = 2
 			@ctx.beginPath()
-			@ctx.rect(unit.x*DIM2,unit.y*DIM2, unit.w*DIM2,unit.h*DIM2)
+			roundRect(@ctx,unit.x*DIM2,unit.y*DIM2, unit.w*DIM2,unit.h*DIM2)
 			@ctx.closePath()
 			@ctx.stroke()
 
 		@ctx.fillStyle = rgba(color,opacity || 0.5)
-		@ctx.fillRect(unit.x*DIM2+UPAD,unit.y*DIM2+UPAD, unit.w*DIM2-UPAD*2,unit.h*DIM2-UPAD*2)
+		fillRect(@ctx,unit.x*DIM2+UPAD,unit.y*DIM2+UPAD, unit.w*DIM2-UPAD*2,unit.h*DIM2-UPAD*2)
 		if @selected_unit_move && @selected_unit && unit.id == @selected_unit.id && @selected_unit_type?
 			@drawUnitType(unit.x*DIM2+DIM2/2,unit.y*DIM2+DIM2/2,unit.w,unit.h,@selected_unit_type,rgba(color,1,1))
 		else
@@ -700,7 +709,7 @@ class Game
 			hy = _.clamp unit.y - 1,0,@sizeY
 			hr = _.clamp unit.x + unit.w + 1,0,@sizeX
 			ht = _.clamp unit.y + unit.h + 1,0,@sizeY
-			@ctx.fillRect((hx)*DIM2,(hy)*DIM2, (hr-hx)*DIM2,(ht-hy)*DIM2)
+			fillRect(@ctx,(hx)*DIM2,(hy)*DIM2, (hr-hx)*DIM2,(ht-hy)*DIM2)
 
 	drawUnits: ()->
 		for unit in state.game.units
@@ -712,7 +721,7 @@ class Game
 			for y in [0...@sizeY]
 				if (x % 2 == 0 && y%2 != 0) || (x % 2 != 0 && y%2 == 0)
 					@ctx.fillStyle = '#202020'
-					@ctx.fillRect(x*DIM2, y*DIM2, DIM2, DIM2)
+					fillRect(@ctx,x*DIM2, y*DIM2, DIM2, DIM2)
 
 				
 
@@ -1063,7 +1072,7 @@ updateView = (new_state)->
 	view = render(h(View,state),window.document.body,view)
 
 
-sock = io('http://69.138.151.79:3330')
+sock = io(SERVER)
 
 
 

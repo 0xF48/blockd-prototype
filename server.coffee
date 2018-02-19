@@ -423,7 +423,7 @@ class Game
 		if @turn_index >= @alive_players.length
 			@turn_index = 0
 		@needs_update = true
-		@alive_players[@turn_index].startTurn()
+		@alive_players[@turn_index]?.startTurn()
 
 
 

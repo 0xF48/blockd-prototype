@@ -5,6 +5,9 @@
 * square: defensive unit, dice is multiplied by factor of X, can not attack.
 
 
+<p align="center"><img src="/screen.png" /></p>
+
+
 ## main rules
 * Each unit can have up to X amount of dice (dots) and up to Y amount of action points (circle split into 4 parts).
 * Units can move all the dice to adjacent friendly units but clicking on the unit and then clicking on any adjacent (touching) friendly unit.
@@ -12,8 +15,3 @@
 * Each action takes up 1 action point, if you move a unit to an empty, move dice to friendly unit, attack another unit, or change unit type.
 * Units can change their type which takes up one action point, simply __select a unit and press 1,2,3.__
 * press space to end your turn
-
-
-## todos
-* The game however needs further balancing in order to be viable, anyone is welcome to modify or fork the game and create your own .io game off of the already existing code.
-* You may want to add global variables for values that need to be tweeked, I have not done this all the way. eg maximum amout of dice, action points per turn...how much dice is gained by resources per turn etc..
